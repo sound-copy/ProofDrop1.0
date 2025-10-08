@@ -1,0 +1,50 @@
+{
+  "name": "proofdrop",
+  "version": "1.0.0",
+  "description": "Drag-and-drop watermark + manifest + timestamp + simple conversions",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac --x64"
+  },
+  "build": {
+    "appId": "com.yourstudio.proofdrop",
+    "productName": "ProofDrop",
+    "files": [
+      "src/**/*",
+      "assets/app.icns",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "src/python/**",
+      "node_modules/ffprobe-static/**"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/ffmpeg",
+        "to": "ffmpeg"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/app.icns",
+      "hardenedRuntime": false,
+      "minimumSystemVersion": "12.0"
+    },
+    "electronVersion": "28.3.3"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "author": "Chris Fitz",
+  "dependencies": {
+    "execa": "^7.2.0",
+    "ffprobe-static": "^3.1.0"
+  }
+}

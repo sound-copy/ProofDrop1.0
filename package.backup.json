@@ -1,0 +1,45 @@
+{
+  "name": "proofdrop",
+  "version": "0.1.0",
+  "description": "Drag-and-drop invisible watermark + manifest + timestamp",
+  "license": "MIT",
+  "author": "Your Studio",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.yourstudio.proofdrop",
+    "asar": true,
+    "asarUnpack": [
+      "src/python/**",
+      "node_modules/ffmpeg-static/**"
+    ],
+    "files": [
+      "src/**/*",
+      "README.md",
+      "LICENSE"
+    ],
+    "extraResources": [
+      { "from": "node_modules/ffmpeg-static", "to": "resources/ffmpeg" }
+    ],
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "target": [
+        { "target": "dmg", "arch": ["x64"] }
+      ]
+    }
+  },
+  "dependencies": {
+    "execa": "5.1.1",
+    "ffmpeg-static": "^5.2.0",
+    "ffprobe-static": "^3.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "electron": "^28.3.0",
+    "electron-builder": "^24.13.3"
+  }
+}
+

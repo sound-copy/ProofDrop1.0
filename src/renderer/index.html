@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ProofDrop 1.0</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:24px;background:#111;color:#eee}
+    h1{font-size:18px;margin:0 0 12px}
+    .row{display:flex;gap:12px;align-items:center;margin:8px 0}
+    .box{border:2px dashed #555;border-radius:12px;height:220px;display:flex;align-items:center;justify-content:center;margin:16px 0;background:#1a1a1a;user-select:none}
+    .box.hover{border-color:#12d66b;background:#12251b}
+    button,select,input[type=checkbox]{font-size:14px}
+    #log{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#0d0d0d;border:1px solid #333;border-radius:8px;padding:12px;height:160px;overflow:auto;white-space:pre-wrap}
+    #status{opacity:.8;margin-left:8px}
+    label{display:flex;align-items:center;gap:6px}
+  </style>
+</head>
+<body>
+  <h1>ProofDrop 1.0</h1>
+
+  <div class="row">
+    <label><input type="checkbox" id="wmToggle" checked> Add Watermark</label>
+
+    <label>Output Presets
+      <select id="presetSelect">
+        <option value="thru">Thru (no change)</option>
+        <option value="mp4_h264">MP4 (H.264)</option>
+        <option value="mp4_h265">MP4 (H.265)</option>
+        <option value="gif_480_18">GIF (≤480px, 18fps)</option>
+        <option value="gif_720_24">GIF (≤720px, 24fps)</option>
+        <option value="webm_vp8">WebM (VP8)</option>
+        <option value="webp">WebP (q75)</option>
+        <option value="wav">WAV (48k/16-bit)</option>
+        <option value="mp3">MP3 (320k)</option>
+        <option value="png">PNG (lossless)</option>
+      </select>
+    </label>
+
+    <button id="chooseBtn">Choose File…</button>
+    <span id="status"></span>
+  </div>
+
+  <div id="drop" class="box">Drop file(s) here</div>
+
+  <div id="log"></div>
+
+  <input id="hiddenFile" type="file" multiple style="display:none">
+  <script src="./renderer.js"></script>
+</body>
+</html>
+
