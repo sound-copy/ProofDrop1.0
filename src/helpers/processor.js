@@ -3,8 +3,33 @@ const fs = require('fs');
 const os = require('os');
 const crypto = require('crypto');
 const execa = (...args) => import('execa').then(m => m.execa(...args));
-const ffprobePath = require('ffprobe-static').path;
+
+function resolveFfmpeg(){
+  const env = process.env.FFMPEG_PATH;
+  if (env && fs.existsSync(env)) return env;
+  const res = path.join(process.resourcesPath || '', 'ffmpeg', 'ffmpeg');
+  if (fs.existsSync(res)) return res;
+  try{
+    const dev = require('ffmpeg-static');
+    if (dev && fs.existsSync(dev)) return dev;
+  }catch(_){ }
+  return 'ffmpeg';
+}
+
+function resolveFfprobe(){
+  const env = process.env.FFPROBE_PATH;
+  if (env && fs.existsSync(env)) return env;
+  const res = path.join(process.resourcesPath || '', 'ffmpeg', 'ffprobe');
+  if (fs.existsSync(res)) return res;
+  try{
+    const dev = require('ffprobe-static').path;
+    if (dev && fs.existsSync(dev)) return dev;
+  }catch(_){ }
+  return 'ffprobe';
+}
+
 const ffmpegPath = resolveFfmpeg();
+const ffprobePath = resolveFfprobe();
 
 function step(onProgress, msg){ if (typeof onProgress === 'function') onProgress(msg); }
 
@@ -21,16 +46,6 @@ function streamSha256(p){
 function outName(dir, base, ext, watermark){
   const tag = watermark ? '_protected' : '_converted';
   return path.join(dir, `${base}${tag}${ext}`);
-}
-
-function resolveFfmpeg(){
-  const res = path.join(process.resourcesPath || '', 'ffmpeg', 'ffmpeg');
-  if (fs.existsSync(res)) return res;
-  try{
-    const dev = require('ffmpeg-static');
-    if (dev && fs.existsSync(dev)) return dev;
-  }catch(_){}
-  return 'ffmpeg';
 }
 
 function resolvePyScript(){
@@ -256,6 +271,26 @@ async function imageToMp4(input, outPath){
   ], {stdio:'inherit'});
 }
 
+async function imageToWebmVp8(input, outPath){
+  await execa(ffmpegPath, [
+    '-y',
+    '-loop','1',
+    '-framerate','30',
+    '-t','5',
+    '-i', input,
+    '-c:v','libvpx',
+    '-crf','22',
+    '-b:v','0',
+    '-quality','good',
+    '-cpu-used','2',
+    '-auto-alt-ref','1',
+    '-lag-in-frames','25',
+    '-pix_fmt','yuv420p',
+    '-an',
+    outPath
+  ], {stdio:'inherit'});
+}
+
 /* ---------- MP4 encoders ---------- */
 async function encodeMp4H264(input, outPath, srcExt){
   const preset = (srcExt === '.webp') ? 'medium' : 'slow';
@@ -365,6 +400,8 @@ async function processFile(filePath, opts={}, onProgress){
   const dir = path.dirname(filePath);
   const ext = ffext(filePath);
   const base = path.basename(filePath, ext);
+  step(onProgress, `ffmpeg=${ffmpegPath}`);
+  step(onProgress, `preset=${String(opts.preset||'thru')} watermark=${!!opts.watermark}`);
   const pythonBin = resolvePythonBin();
   const script = resolvePyScript();
 
@@ -423,14 +460,16 @@ async function processFile(filePath, opts={}, onProgress){
   if (isAud){
     if (preset === 'mp3'){
       const out = outName(dir, base, '.mp3', opts.watermark);
+      if (!(await hasAudio(filePath))) throw new Error('No audio stream in source (nothing to extract)');
       if (opts.watermark) await watermarkAudioGeneric(filePath, sha, out);
-      else await execa(ffmpegPath, ['-y','-i', filePath, '-c:a','libmp3lame','-b:a','320k','-ar','44100', out], {stdio:'inherit'});
+      else await execa(ffmpegPath, ['-y','-i', filePath, '-vn', '-c:a','libmp3lame','-b:a','320k','-ar','44100', out], {stdio:'inherit'});
       return { output_dir: dir, base, manifest: manifestPath, ots: otsPath };
     }
     if (preset === 'wav' || preset === 'thru'){
       const out = outName(dir, base, '.wav', opts.watermark);
+      if (!(await hasAudio(filePath))) throw new Error('No audio stream in source (nothing to extract)');
       if (opts.watermark) await watermarkAudioGeneric(filePath, sha, out);
-      else await execa(ffmpegPath, ['-y','-i', filePath, '-c:a','pcm_s16le','-ar','48000','-ac','2', out], {stdio:'inherit'});
+      else await execa(ffmpegPath, ['-y','-i', filePath, '-vn', '-c:a','pcm_s16le','-ar','48000','-ac','2', out], {stdio:'inherit'});
       return { output_dir: dir, base, manifest: manifestPath, ots: otsPath };
     }
     // UPDATED: audio-only MP4 (no black video)
@@ -453,7 +492,8 @@ async function processFile(filePath, opts={}, onProgress){
       throw new Error('Unsupported conversion: audio → image');
     }
     const out = outName(dir, base, '.wav', opts.watermark);
-    await execa(ffmpegPath, ['-y','-i', filePath, '-c:a','pcm_s16le','-ar','48000','-ac','2', out], {stdio:'inherit'});
+    if (!(await hasAudio(filePath))) throw new Error('No audio stream in source (nothing to extract)');
+    await execa(ffmpegPath, ['-y','-i', filePath, '-vn', '-c:a','pcm_s16le','-ar','48000','-ac','2', out], {stdio:'inherit'});
     return { output_dir: dir, base, manifest: manifestPath, ots: otsPath };
   }
 
