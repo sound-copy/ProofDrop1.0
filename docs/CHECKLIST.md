@@ -1,0 +1,11 @@
+## ProofDrop1.0 – Checklist (ops-first)
+- [ ] Env freeze (package.json lock; node --version logged)
+- [ ] CLI: npm scripts: build:mac, build:win
+- [ ] Packager config: electron-builder (or pkg/makes)
+- [ ] FFmpeg/ffprobe path resolution (dev vs packaged)
+- [ ] Error messages: clear, single-line summaries
+- [ ] Logging: basic file+console toggle
+- [ ] Minimal “Resuscitation Guide” (see Task 7)
+- [ ] GitHub Release workflow (attach .dmg/.exe)
+- [ ] Test notes for friend (right-click–Open on macOS)
+- [ ] Tag v0.1.0 and publish
