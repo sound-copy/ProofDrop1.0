@@ -1,0 +1,11 @@
+name: 🐞 Bug Report
+description: File a small reproducible issue
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Steps → Expected → Actual
+    validations:
+      required: true
