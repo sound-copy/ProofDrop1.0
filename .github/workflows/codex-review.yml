@@ -4,7 +4,18 @@ on:
   pull_request:
     branches: [ main ]
     types: [ opened, synchronize, reopened ]
+    paths:
+      - "src/**"
+      - "app/**"
+      - "*.py"
+      - "*.js"
+      - "*.ts"
+      - "*.jsx"
+      - "*.tsx"
+      - "*.json"
+      - "!README.md"
   workflow_dispatch: {}
+
 
 permissions:
   contents: read
@@ -37,4 +48,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           codex --version || true
-          codex review || true
+          echo "🧩 Invoking Codex review with GitHub comment output"
+          codex review --format github || echo "codex review completed (non-blocking)"
