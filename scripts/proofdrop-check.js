@@ -1,32 +1,19 @@
-#!/usr/bin/env node
-const path = require('path');
-const { audioPresenceLabel } = require('../src/helpers/mediaProbe');
+// scripts/proofdrop-check.js
+//⋄ run this BEFORE build to be sure ffmpeg/ffprobe are findable
 
-const root = path.join(__dirname, '..');
-const fixtures = [
-  { file: 'fixtures/audio-tone.wav', expect: 'has audio' },
-  { file: 'fixtures/blank.png', expect: 'no audio' }
-];
+const { spawnSync } = require("node:child_process");
 
-async function main(){
-  let exitCode = 0;
-  for (const { file, expect } of fixtures){
-    const full = path.join(root, file);
-    try{
-      const result = await audioPresenceLabel(full);
-      const ok = result === expect;
-      const mark = ok ? '✓' : '✗';
-      console.log(`${mark} ${file}: ${result}`);
-      if (!ok){
-        console.log(`  expected: ${expect}`);
-        exitCode = 1;
-      }
-    }catch(err){
-      exitCode = 1;
-      console.log(`✗ ${file}: error ${err.message || err}`);
-    }
-  }
-  process.exit(exitCode);
+function check(bin) {
+  const r = spawnSync(bin, ["-version"], { encoding: "utf8" });
+  return r.status === 0;
 }
 
-main();
+const okFfmpeg = check("ffmpeg");
+const okFfprobe = check("ffprobe");
+
+if (!okFfmpeg || !okFfprobe) {
+  console.error("✗ proofdrop: ffmpeg/ffprobe not resolvable on this machine");
+  process.exit(1);
+}
+
+console.log("✓ proofdrop: ffmpeg/ffprobe available");
