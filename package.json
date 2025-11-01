@@ -5,7 +5,8 @@
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --mac --x64"
+    "build": "electron-builder --mac --x64",
+    "proofdrop:check": "node scripts/proofdrop-check.js"
   },
   "build": {
     "appId": "com.yourstudio.proofdrop",
@@ -19,7 +20,8 @@
     "asar": true,
     "asarUnpack": [
       "src/python/**",
-      "node_modules/ffprobe-static/**"
+      "node_modules/ffprobe-static/**",
+      "node_modules/ffmpeg-static/**"
     ],
     "extraResources": [
       {
@@ -45,6 +47,7 @@
   "author": "Chris Fitz",
   "dependencies": {
     "execa": "^7.2.0",
+    "ffmpeg-static": "^5.2.0",
     "ffprobe-static": "^3.1.0"
   }
 }

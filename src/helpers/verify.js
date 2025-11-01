@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs');
-const { execa } = require('execa');
 const os = require('os');
-const ffmpegPath = require('ffmpeg-static');
+const execa = (...args) => import('execa').then(m => m.execa(...args));
+const { resolveFfmpeg } = require('./ffbinary');
+const ffmpegPath = resolveFfmpeg();
 
 (async ()=>{
   const file = process.argv[2];

@@ -3,30 +3,8 @@ const fs = require('fs');
 const os = require('os');
 const crypto = require('crypto');
 const execa = (...args) => import('execa').then(m => m.execa(...args));
-
-function resolveFfmpeg(){
-  const env = process.env.FFMPEG_PATH;
-  if (env && fs.existsSync(env)) return env;
-  const res = path.join(process.resourcesPath || '', 'ffmpeg', 'ffmpeg');
-  if (fs.existsSync(res)) return res;
-  try{
-    const dev = require('ffmpeg-static');
-    if (dev && fs.existsSync(dev)) return dev;
-  }catch(_){ }
-  return 'ffmpeg';
-}
-
-function resolveFfprobe(){
-  const env = process.env.FFPROBE_PATH;
-  if (env && fs.existsSync(env)) return env;
-  const res = path.join(process.resourcesPath || '', 'ffmpeg', 'ffprobe');
-  if (fs.existsSync(res)) return res;
-  try{
-    const dev = require('ffprobe-static').path;
-    if (dev && fs.existsSync(dev)) return dev;
-  }catch(_){ }
-  return 'ffprobe';
-}
+const { resolveFfmpeg, resolveFfprobe } = require('./ffbinary');
+const { hasAudio } = require('./mediaProbe');
 
 const ffmpegPath = resolveFfmpeg();
 const ffprobePath = resolveFfprobe();
@@ -239,20 +217,6 @@ async function audioToVideo(input, outPath){
     '-c:a','aac','-b:a','192k',
     outPath
   ], {stdio:'inherit'});
-}
-
-/* ---------- NEW HELPERS ---------- */
-async function hasAudio(input){
-  try{
-    const { stdout } = await execa(ffprobePath, [
-      '-v','error',
-      '-select_streams','a',
-      '-show_entries','stream=index',
-      '-of','csv=p=0',
-      input
-    ], {stdio:'pipe'});
-    return stdout && stdout.trim().length > 0;
-  }catch(_){ return false; }
 }
 
 async function imageToMp4(input, outPath){
@@ -559,4 +523,3 @@ async function processFile(filePath, opts={}, onProgress){
 }
 
 module.exports = { processFile };
-
