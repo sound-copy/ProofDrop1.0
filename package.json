@@ -27,12 +27,6 @@
       "node_modules/ffprobe-static/**",
       "node_modules/ffmpeg-static/**"
     ],
-    "extraResources": [
-      {
-        "from": "assets/ffmpeg",
-        "to": "ffmpeg"
-      }
-    ],
     "mac": {
       "category": "public.app-category.graphics-design",
       "target": [
