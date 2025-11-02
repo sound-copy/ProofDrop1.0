@@ -1,0 +1,53 @@
+name: Release Artifacts
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optional tag to attach artifacts to (for dry runs only, artifacts are uploaded to workflow results)."
+        required: false
+
+jobs:
+  mac-build:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build distributables
+        run: npm run build
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofdrop-mac-dist
+          path: |
+            dist/ProofDrop-*.dmg
+            dist/ProofDrop-*.dmg.blockmap
+            dist/latest-mac.yml
+
+      - name: Attach assets to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/ProofDrop-*.dmg
+            dist/ProofDrop-*.dmg.blockmap
+            dist/latest-mac.yml
