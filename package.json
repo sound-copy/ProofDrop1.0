@@ -9,6 +9,9 @@
     "proofdrop:check": "node scripts/proofdrop-check.js",
     "build": "npm run proofdrop:check && electron-builder --mac --x64"
   },
+  "engines": {
+    "node": "24.5.0"
+  },
   "build": {
     "appId": "com.yourstudio.proofdrop",
     "productName": "ProofDrop",
@@ -42,15 +45,15 @@
     "electronVersion": "28.3.3"
   },
   "devDependencies": {
-    "electron": "^28.3.3",
-    "electron-builder": "^24.13.3",
-    "eslint": "^9.39.0",
-    "globals": "^16.5.0"
+    "electron": "28.3.3",
+    "electron-builder": "24.13.3",
+    "eslint": "9.39.0",
+    "globals": "16.5.0"
   },
   "author": "Chris Fitz",
   "dependencies": {
-    "execa": "^7.2.0",
-    "ffmpeg-static": "^5.2.0",
-    "ffprobe-static": "^3.1.0"
+    "execa": "7.2.0",
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0"
   }
 }

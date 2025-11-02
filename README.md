@@ -18,7 +18,7 @@ Zero-cost invisible watermark app (Electron). Drag a file in; get `_protected`, 
 
 ## Quick start
 ```bash
-# 1) Install Node.js 18+
+# 1) Install Node.js 24.5.0 (`nvm use` will read from .nvmrc)
 # 2) In project folder
 npm install
 
@@ -27,7 +27,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install opencv-python imwatermark opentimestamps-client
 
 # 4) Dev run
-npm start
+npm run dev
 
 # 5) Build Mac app (.dmg)
 npm run build
