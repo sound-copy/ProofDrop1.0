@@ -7,7 +7,7 @@
     "doctor:electron": "node scripts/doctor-electron.js",
     "predev": "npm run doctor:electron",
     "dev": "electron .",
-    "prebuild": "npm run doctor:electron",
+    "prebuild": "npm run doctor:electron && npm run proofdrop:check",
     "lint": "eslint .",
     "proofdrop:check": "node scripts/proofdrop-check.js",
     "build": "npm run proofdrop:check && electron-builder --mac --x64"
