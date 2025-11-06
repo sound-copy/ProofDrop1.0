@@ -1,4 +1,5 @@
 # ProofDrop v1
+[![Codex Smoke](https://img.shields.io/badge/Codex%20Smoke-running-brightgreen)](https://github.com/sound-copy/ProofDrop1.0/actions?query=workflow%3A%22Codex+Smoke%22)
 
 Zero-cost invisible watermark app (Electron). Drag a file in; get `_protected`, `_manifest.json`, and an OpenTimestamps proof next to the original.
 
