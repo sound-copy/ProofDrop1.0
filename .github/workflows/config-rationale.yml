@@ -1,0 +1,68 @@
+name: config-rationale
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  advise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Advise on config rationale (non-blocking)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // files changed
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: pr.number, per_page: 100
+            });
+            const changed = files.map(f => f.filename);
+
+            // config patterns (language-agnostic + your stacks)
+            const res = [
+              /^\.github\/workflows\/.+\.ya?ml$/,
+              /^\.github\/ISSUE_TEMPLATE\/.+$/,
+              /^\.github\/CODEOWNERS$/,
+              /^\.github\/CONFIG_LEDGER\.md$/,
+              /^package\.json$/, /^package-lock\.json$/, /^pnpm-lock\.ya?ml$/, /^yarn\.lock$/,
+              /^pyproject\.toml$/, /^poetry\.lock$/, /^Pipfile$/, /^Pipfile\.lock$/, /^requirements.*\.txt$/, /^setup\.cfg$/,
+              /^tsconfig\.json$/, /^vite\.config\..+$/, /^webpack\.config\..+$/, /^rollup\.config\..+$/,
+              /^electron-builder\..+$/, /^builder.+\.ya?ml$/,
+              /^Dockerfile$/, /^docker-compose.*\.ya?ml$/,
+              /^\.pre-commit-config\.ya?ml$/, /^\.eslintrc(\..+)?$/, /^\.prettierrc(\..+)?$/, /^\.babelrc(\..+)?$/, /^\.editorconfig$/,
+              /^config\..+$/, /^\.env(\..+)?$/,
+              /^manifest\.json$/
+            ];
+
+            const changedConfigs = changed.filter(f => res.some(r => r.test(f)));
+            const body = (pr.body || "").toLowerCase();
+
+            const missingWhy = !body.includes("### why (rationale)");
+            const missingRollback = !body.includes("### rollback");
+            const missingLedger = changedConfigs.length > 0 && !changed.includes(".github/CONFIG_LEDGER.md");
+
+            if (changedConfigs.length > 0 && (missingWhy || missingRollback || missingLedger)) {
+              let msg = "📝 **Config change advisory** (non-blocking)\n\n";
+              msg += "I detected config/build/CI files changed:\n";
+              msg += changedConfigs.map(f => `- \`${f}\``).join("\n") + "\n\n";
+              msg += "Please ensure your PR description includes:\n";
+              if (missingWhy) msg += "- **### Why (rationale)**\n";
+              if (missingRollback) msg += "- **### Rollback**\n";
+              if (missingLedger) msg += "- An entry in `.github/CONFIG_LEDGER.md`\n";
+              await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body: msg });
+              // add a label for visibility
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: ["🧩 codex","config-change"] }).catch(()=>{});
+            }
+            core.info("Advisory completed (non-blocking).")
