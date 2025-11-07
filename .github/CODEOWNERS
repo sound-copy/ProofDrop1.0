@@ -1,0 +1,33 @@
+# High-risk config → require your review
+.github/workflows/**           @sound-copy
+.github/ISSUE_TEMPLATE/**      @sound-copy
+.github/CODEOWNERS             @sound-copy
+.github/CONFIG_LEDGER.md       @sound-copy
+
+# Package/build/CI config (common stacks)
+package.json                   @sound-copy
+package-lock.json              @sound-copy
+pnpm-lock.yaml                 @sound-copy
+yarn.lock                      @sound-copy
+pyproject.toml                 @sound-copy
+poetry.lock                    @sound-copy
+Pipfile                        @sound-copy
+Pipfile.lock                   @sound-copy
+requirements*.txt              @sound-copy
+setup.cfg                      @sound-copy
+tsconfig.json                  @sound-copy
+vite.config.*                  @sound-copy
+webpack.config.*               @sound-copy
+rollup.config.*                @sound-copy
+electron-builder.*             @sound-copy
+builder*.yml                   @sound-copy
+Dockerfile                     @sound-copy
+docker-compose*.yml            @sound-copy
+.pre-commit-config*.yml        @sound-copy
+.eslintrc*                     @sound-copy
+.prettierrc*                   @sound-copy
+.babelrc*                      @sound-copy
+.editorconfig                  @sound-copy
+config.*                       @sound-copy
+.env*                          @sound-copy
+manifest.json                  @sound-copy
