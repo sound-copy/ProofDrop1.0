@@ -1,7 +1,7 @@
 {
   "name": "proofdrop",
   "version": "1.0.0",
-  "description": "Drag-and-drop watermark + manifest + timestamp + simple conversions",
+  "description": "Fast drag-and-drop watermark + manifest + timestamp + simple conversions",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
