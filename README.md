@@ -36,3 +36,4 @@ npm run build
 - Audio watermark: If `audiowmark` isn’t installed, the app still processes audio but leaves a `NEEDS_AUDIOWMARK.txt` reminder and embeds the code in metadata as a weak fallback. Recommended: install via MacPorts `sudo port install audiowmark`.
 - Timestamps: For fully automatic stamping, install `opentimestamps-client` so the `ots` CLI is available; otherwise use the website and attach the `.ots` later.
 - Python: If your system Python isn’t accessible as `python3`, set `PYTHON_BIN` env var before launch.
+
